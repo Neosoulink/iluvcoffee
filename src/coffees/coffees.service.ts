@@ -35,9 +35,11 @@ export class CoffeesService {
     const existingCoffee = this.findOne(id);
     console.log(updateCoffeeDto);
 
+    if (!existingCoffee) throw new NotFoundException(`Coffee #${id} not found`);
+
     if (existingCoffee) {
       // update here
-      return '';
+      return updateCoffeeDto;
     }
   }
 
