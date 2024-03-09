@@ -10,6 +10,9 @@ async function bootstrap() {
       transform: true,
       forbidNonWhitelisted: true,
       forbidUnknownValues: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   await app.listen(3000);
