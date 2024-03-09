@@ -12,7 +12,7 @@ import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
   controllers: [CoffeesController],
   providers: [
     CoffeesService,
-    { provide: COFFEE_BRANDS, useValue: ['chocolate', 'vanilla'] },
+    { provide: COFFEE_BRANDS, useFactory: () => ['chocolate', 'vanilla'] },
   ],
   exports: [CoffeesService],
 })
