@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -12,6 +12,7 @@ import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
+import coffeesConfig from './config/coffees.config';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CoffeesService {
@@ -23,10 +24,11 @@ export class CoffeesService {
     private readonly _dataSource: DataSource,
     @Inject(COFFEE_BRANDS) coffeeBrands: string[],
     private readonly _configService: ConfigService,
+    @Inject(coffeesConfig.KEY)
+    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
   ) {
-    const dbHost = this._configService.get('database.port');
     console.log(coffeeBrands);
-    console.log(dbHost);
+    console.log(coffeesConfiguration.foo);
   }
 
   private async _preloadFlavorsByName(name: string): Promise<Flavor> {
