@@ -1,13 +1,16 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
 import { Coffee } from './entities/coffee.entity';
 import { Flavor } from './entities/flavors.entity';
 import { Event } from 'src/events/entities/event.entity';
+
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+
 import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 
 @Injectable({ scope: Scope.DEFAULT })
@@ -19,8 +22,11 @@ export class CoffeesService {
     private readonly _flavorRepository: Repository<Flavor>,
     private readonly _dataSource: DataSource,
     @Inject(COFFEE_BRANDS) coffeeBrands: string[],
+    private readonly _configService: ConfigService,
   ) {
-    coffeeBrands;
+    const dbHost = this._configService.get('database.port');
+    console.log(coffeeBrands);
+    console.log(dbHost);
   }
 
   private async _preloadFlavorsByName(name: string): Promise<Flavor> {
