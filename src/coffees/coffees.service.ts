@@ -11,8 +11,9 @@ import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
-import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 import coffeesConfig from './config/coffees.config';
+
+import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CoffeesService {
@@ -25,10 +26,11 @@ export class CoffeesService {
     @Inject(COFFEE_BRANDS) coffeeBrands: string[],
     private readonly _configService: ConfigService,
     @Inject(coffeesConfig.KEY)
-    private readonly coffeesConfiguration: ConfigType<typeof coffeesConfig>,
+    private readonly _coffeesConfiguration: ConfigType<typeof coffeesConfig>,
   ) {
     console.log(coffeeBrands);
-    console.log(coffeesConfiguration.foo);
+    console.log(this._configService.get('coffees'));
+    console.log(this._coffeesConfiguration.foo);
   }
 
   private async _preloadFlavorsByName(name: string): Promise<Flavor> {

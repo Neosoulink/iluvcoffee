@@ -1,9 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
+  constructor(private readonly configService: ConfigService) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -11,6 +14,6 @@ export class ApiKeyGuard implements CanActivate {
     const request = ctx.getRequest<Request>();
     const authHeader = request.header('Authorization');
 
-    return authHeader === process.env.API_KEY;
+    return authHeader === this.configService.get('api.key');
   }
 }
