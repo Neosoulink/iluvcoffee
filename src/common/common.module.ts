@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './filters/hhtps-expections/http-exception.f
 import { ApiKeyGuard } from './guards/api-key/api-key.guard';
 
 import { WrapResponseInterceptor } from './interceptors/wrap-response/wrap-response.interceptor';
+import { TimeoutInterceptor } from './interceptors/timeout/timeout.interceptor';
 
 @Module({
   imports: [ConfigModule],
@@ -30,6 +31,7 @@ import { WrapResponseInterceptor } from './interceptors/wrap-response/wrap-respo
     },
     { provide: APP_GUARD, useClass: ApiKeyGuard },
     { provide: APP_INTERCEPTOR, useClass: WrapResponseInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: TimeoutInterceptor },
   ],
 })
 export class CommonModule {}
