@@ -1,11 +1,13 @@
 import { Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { HttpExceptionFilter } from './filters/hhtps-expections/http-exception.filter';
 
 import { ApiKeyGuard } from './guards/api-key/api-key.guard';
+
+import { WrapResponseInterceptor } from './interceptors/wrap-response/wrap-response.interceptor';
 
 @Module({
   imports: [ConfigModule],
@@ -27,6 +29,7 @@ import { ApiKeyGuard } from './guards/api-key/api-key.guard';
       useClass: HttpExceptionFilter,
     },
     { provide: APP_GUARD, useClass: ApiKeyGuard },
+    { provide: APP_INTERCEPTOR, useClass: WrapResponseInterceptor },
   ],
 })
 export class CommonModule {}
