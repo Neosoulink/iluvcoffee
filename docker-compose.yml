@@ -2,12 +2,19 @@ version: '3.1'
 
 services:
   db:
-    container_name: iluvcoffee-postgres
     image: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_PASSWORD: root
       POSTGRES_USER: root
       POSTGRES_DB: iluvcoffee-db
+  test-db:
+    image: postgres
+    restart: always
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
