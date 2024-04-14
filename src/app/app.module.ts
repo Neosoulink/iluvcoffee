@@ -3,15 +3,15 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from '@hapi/joi';
 
-import { CoffeesModule } from 'src/coffees/coffees.module';
-import { CoffeeRatingModule } from 'src/coffee-rating/coffee-rating.module';
-import { CommonModule } from 'src/common/common.module';
+import { CoffeesModule } from '../coffees/coffees.module';
+import { CoffeeRatingModule } from '../coffee-rating/coffee-rating.module';
+import { CommonModule } from '../common/common.module';
 
 import { AppService } from './app.service';
 
 import { AppController } from './app.controller';
 
-import appConfig from 'src/config/app.config';
+import appConfig from '../config/app.config';
 
 @Module({
   imports: [
