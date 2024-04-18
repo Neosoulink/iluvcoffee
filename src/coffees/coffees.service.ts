@@ -4,12 +4,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
 import { Coffee } from './entities/coffee.entity';
-import { Flavor } from './entities/flavors.entity';
-import { Event } from 'src/events/entities/event.entity';
+import { Flavor } from './entities/flavor.entity';
+import { Event } from '../events/entities/event.entity';
 
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 import coffeesConfig from './config/coffees.config';
 
