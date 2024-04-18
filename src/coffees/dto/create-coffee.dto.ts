@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
+import { Flavor } from '../entities/flavor.entity';
+
 export class CreateCoffeeDto {
   @ApiProperty({ description: 'Coffee name.' })
   @IsString()
@@ -12,5 +14,5 @@ export class CreateCoffeeDto {
 
   @ApiProperty({ example: [] })
   @IsString({ each: true })
-  readonly flavors: string[];
+  readonly flavors: Flavor['name'][];
 }
