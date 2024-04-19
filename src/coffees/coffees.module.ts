@@ -16,7 +16,11 @@ import coffeesConfig from './config/coffees.config';
 
 import { Coffee, CoffeeMongoose, CoffeeSchema } from './entities/coffee.entity';
 import { Flavor } from './entities/flavor.entity';
-import { Event } from '../events/entities/event.entity';
+import {
+  Event,
+  EventMongoose,
+  EventSchema,
+} from '../events/entities/event.entity';
 
 import appConfig from '../../src/config/app.config';
 
@@ -30,6 +34,7 @@ export class CoffeesModule {
           appConfig().db.type === 'mongo_mongoose'
             ? MongooseModule.forFeature([
                 { name: CoffeeMongoose.name, schema: CoffeeSchema },
+                { name: EventMongoose.name, schema: EventSchema },
               ])
             : TypeOrmModule.forFeature([Coffee, Flavor, Event]))(),
         ConfigModule.forFeature(coffeesConfig),

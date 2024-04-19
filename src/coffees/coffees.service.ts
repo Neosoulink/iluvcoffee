@@ -2,8 +2,8 @@ import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import coffeesConfig from './config/coffees.config';
 
@@ -11,7 +11,7 @@ import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 
 import { Coffee, CoffeeMongoose } from './entities/coffee.entity';
 import { Flavor } from './entities/flavor.entity';
-import { Event } from '../events/entities/event.entity';
+import { Event, EventMongoose } from '../events/entities/event.entity';
 
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
@@ -130,6 +130,9 @@ export class CoffeesServiceMongoose {
   constructor(
     @InjectModel(CoffeeMongoose.name)
     private readonly _coffeeModel: Model<CoffeeMongoose>,
+    @InjectModel(EventMongoose.name)
+    private readonly eventModel: Model<EventMongoose>,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   async findAll(paginationQuery: PaginationDto) {
@@ -140,6 +143,8 @@ export class CoffeesServiceMongoose {
   async findOne(id: string) {
     const coffee = await this._coffeeModel.findOne({ _id: id }).exec();
     if (!coffee) throw new NotFoundException(`Coffee #${id} not found`);
+
+    await this.recommendCoffee(coffee);
 
     return coffee;
   }
@@ -168,5 +173,29 @@ export class CoffeesServiceMongoose {
   async remove(id: string) {
     const coffee = await this.findOne(id);
     return (await coffee.deleteOne({ new: true })).deletedCount;
+  }
+
+  async recommendCoffee(coffee: CoffeeMongoose) {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+      coffee.recommendations++;
+
+      const recommendEvent = new this.eventModel({
+        name: 'recommend_coffee',
+        type: 'coffee',
+        payload: { coffeeId: coffee.id },
+      });
+
+      await recommendEvent.save({ session });
+      await coffee.save({ session });
+
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+    } finally {
+      session.endSession();
+    }
   }
 }
