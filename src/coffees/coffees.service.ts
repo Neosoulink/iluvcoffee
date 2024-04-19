@@ -134,10 +134,7 @@ export class CoffeesServiceMongoose {
 
   async findAll(paginationQuery: PaginationDto) {
     const { limit, offset } = paginationQuery;
-
-    console.log(limit, offset);
-
-    return this._coffeeModel.find().exec();
+    return this._coffeeModel.find().skip(offset).limit(limit).exec();
   }
 
   async findOne(id: string) {
