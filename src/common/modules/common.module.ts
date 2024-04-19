@@ -8,14 +8,14 @@ import { ConfigModule } from '@nestjs/config';
 
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
-import { HttpExceptionFilter } from './filters/hhtps-expections/http-exception.filter';
+import { HttpExceptionFilter } from '../filters/hhtps-expections/http-exception.filter';
 
-import { ApiKeyGuard } from './guards/api-key/api-key.guard';
+import { ApiKeyGuard } from '../guards/api-key/api-key.guard';
 
-import { WrapResponseInterceptor } from './interceptors/wrap-response/wrap-response.interceptor';
-import { TimeoutInterceptor } from './interceptors/timeout/timeout.interceptor';
+import { WrapResponseInterceptor } from '../interceptors/wrap-response/wrap-response.interceptor';
+import { TimeoutInterceptor } from '../interceptors/timeout/timeout.interceptor';
 
-import { LoggingMiddleware } from './middleware/logging/logging.middleware';
+import { LoggingMiddleware } from '../middleware/logging/logging.middleware';
 
 @Module({
   imports: [ConfigModule],
