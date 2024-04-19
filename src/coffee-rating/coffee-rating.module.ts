@@ -1,9 +1,14 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { CoffeesModule } from '../coffees/coffees.module';
 import { CoffeeRatingService } from './coffee-rating.service';
 
-@Module({
-  imports: [CoffeesModule],
-  providers: [CoffeeRatingService],
-})
-export class CoffeeRatingModule {}
+@Module({})
+export class CoffeeRatingModule {
+  static async forRootAsync(): Promise<DynamicModule> {
+    return {
+      module: CoffeeRatingModule,
+      imports: [CoffeesModule.forRootAsync()],
+      providers: [CoffeeRatingService],
+    };
+  }
+}

@@ -1,33 +1,67 @@
-import { Module, Scope } from '@nestjs/common';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import { CoffeesController } from './coffees.controller';
+import {
+  CoffeesController,
+  CoffeesControllerMongoose,
+} from './coffees.controller';
 
-import { CoffeesService } from './coffees.service';
-
-import { Coffee } from './entities/coffee.entity';
-import { Flavor } from './entities/flavor.entity';
-import { Event } from '../events/entities/event.entity';
+import { CoffeesService, CoffeesServiceMongoose } from './coffees.service';
 
 import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 
 import coffeesConfig from './config/coffees.config';
 
-@Module({
-  imports: [
-    TypeOrmModule.forFeature([Coffee, Flavor, Event]),
-    ConfigModule.forFeature(coffeesConfig),
-  ],
-  controllers: [CoffeesController],
-  providers: [
-    CoffeesService,
-    {
-      provide: COFFEE_BRANDS,
-      useFactory: () => ['chocolate', 'vanilla'],
-      scope: Scope.TRANSIENT,
-    },
-  ],
-  exports: [CoffeesService],
-})
-export class CoffeesModule {}
+import { Coffee, CoffeeMongoose, CoffeeSchema } from './entities/coffee.entity';
+import { Flavor } from './entities/flavor.entity';
+import {
+  Event,
+  EventMongoose,
+  EventSchema,
+} from '../events/entities/event.entity';
+
+import appConfig from '../../src/config/app.config';
+
+@Module({})
+export class CoffeesModule {
+  static async forRootAsync(): Promise<DynamicModule> {
+    return {
+      module: CoffeesModule,
+      imports: [
+        (() =>
+          appConfig().db.type === 'mongo_mongoose'
+            ? MongooseModule.forFeature([
+                { name: CoffeeMongoose.name, schema: CoffeeSchema },
+                { name: EventMongoose.name, schema: EventSchema },
+              ])
+            : TypeOrmModule.forFeature([Coffee, Flavor, Event]))(),
+        ConfigModule.forFeature(coffeesConfig),
+      ],
+      controllers: [
+        (() =>
+          appConfig().db.type === 'mongo_mongoose'
+            ? CoffeesControllerMongoose
+            : CoffeesController)(),
+      ],
+      providers: [
+        (() =>
+          appConfig().db.type === 'mongo_mongoose'
+            ? CoffeesServiceMongoose
+            : CoffeesService)(),
+        {
+          provide: COFFEE_BRANDS,
+          useFactory: () => ['chocolate', 'vanilla'],
+          scope: Scope.TRANSIENT,
+        },
+      ],
+      exports: [
+        (() =>
+          appConfig().db.type === 'mongo_mongoose'
+            ? CoffeesServiceMongoose
+            : CoffeesService)(),
+      ],
+    };
+  }
+}
