@@ -24,7 +24,7 @@ export class EventMongoose {
   @Prop()
   type: string;
 
-  @Prop()
+  @Prop({ index: true })
   name: string;
 
   @Prop({ type: mongoose.SchemaTypes.Mixed })
@@ -32,3 +32,4 @@ export class EventMongoose {
 }
 
 export const EventSchema = SchemaFactory.createForClass(EventMongoose);
+EventSchema.index({ name: 1, type: -1 });
