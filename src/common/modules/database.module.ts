@@ -16,7 +16,7 @@ export class DatabaseModule {
 
           if (config.db.type === 'mongo_mongoose')
             return MongooseModule.forRoot(
-              `mongodb://${config.db.host}:${config.db.host}/${config.db.name}`,
+              `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`,
             );
 
           return TypeOrmModule.forRootAsync({

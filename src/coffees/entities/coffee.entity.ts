@@ -29,7 +29,7 @@ export class Coffee {
   flavors: Flavor[];
 }
 
-@Schema()
+@Schema({ collection: 'coffee' })
 export class CoffeeMongoose extends Document {
   @Prop()
   name: string;

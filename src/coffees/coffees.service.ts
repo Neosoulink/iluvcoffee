@@ -1,19 +1,21 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { ConfigService, ConfigType } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
-import { Coffee } from './entities/coffee.entity';
+import coffeesConfig from './config/coffees.config';
+
+import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
+
+import { Coffee, CoffeeMongoose } from './entities/coffee.entity';
 import { Flavor } from './entities/flavor.entity';
 import { Event } from '../events/entities/event.entity';
 
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
-
-import coffeesConfig from './config/coffees.config';
-
-import { COFFEE_BRANDS } from './tokens/coffee-brands.token';
 
 @Injectable({ scope: Scope.DEFAULT })
 export class CoffeesService {
@@ -120,5 +122,54 @@ export class CoffeesService {
     } finally {
       await queryRunner.release();
     }
+  }
+}
+
+@Injectable({ scope: Scope.DEFAULT })
+export class CoffeesServiceMongoose {
+  constructor(
+    @InjectModel(CoffeeMongoose.name)
+    private readonly _coffeeModel: Model<CoffeeMongoose>,
+  ) {}
+
+  async findAll(paginationQuery: PaginationDto) {
+    const { limit, offset } = paginationQuery;
+
+    console.log(limit, offset);
+
+    return this._coffeeModel.find().exec();
+  }
+
+  async findOne(id: string) {
+    const coffee = await this._coffeeModel.findOne({ _id: id }).exec();
+    if (!coffee) throw new NotFoundException(`Coffee #${id} not found`);
+
+    return coffee;
+  }
+
+  create(createCoffeeDto: CreateCoffeeDto) {
+    const coffee = new this._coffeeModel(createCoffeeDto);
+    return coffee.save();
+  }
+
+  async update(id: string, updateCoffeeDto: UpdateCoffeeDto) {
+    const coffee = await this._coffeeModel
+      .findOneAndUpdate(
+        { _id: id },
+        {
+          $set: updateCoffeeDto,
+        },
+        { new: true },
+      )
+      .exec();
+
+    if (!coffee) throw new NotFoundException(`Coffee #${id} not found`);
+
+    return coffee;
+  }
+
+  async remove(id: string) {
+    const coffee = await this.findOne(id);
+    return (await coffee.deleteOne({ new: true })).deletedCount;
   }
 }
