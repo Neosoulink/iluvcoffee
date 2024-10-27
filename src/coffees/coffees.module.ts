@@ -24,44 +24,40 @@ import {
 
 import appConfig from '../../src/config/app.config';
 
+const currentModule =
+  appConfig().db.type === 'mongo_mongoose'
+    ? MongooseModule.forFeature([
+        { name: CoffeeMongoose.name, schema: CoffeeSchema },
+        { name: EventMongoose.name, schema: EventSchema },
+      ])
+    : TypeOrmModule.forFeature([Coffee, Flavor, Event]);
+
+const currentController =
+  appConfig().db.type === 'mongo_mongoose'
+    ? CoffeesControllerMongoose
+    : CoffeesController;
+
+const currentService =
+  appConfig().db.type === 'mongo_mongoose'
+    ? CoffeesServiceMongoose
+    : CoffeesService;
+
 @Module({})
 export class CoffeesModule {
   static async forRootAsync(): Promise<DynamicModule> {
     return {
       module: CoffeesModule,
-      imports: [
-        (() =>
-          appConfig().db.type === 'mongo_mongoose'
-            ? MongooseModule.forFeature([
-                { name: CoffeeMongoose.name, schema: CoffeeSchema },
-                { name: EventMongoose.name, schema: EventSchema },
-              ])
-            : TypeOrmModule.forFeature([Coffee, Flavor, Event]))(),
-        ConfigModule.forFeature(coffeesConfig),
-      ],
-      controllers: [
-        (() =>
-          appConfig().db.type === 'mongo_mongoose'
-            ? CoffeesControllerMongoose
-            : CoffeesController)(),
-      ],
+      imports: [currentModule, ConfigModule.forFeature(coffeesConfig)],
+      controllers: [currentController],
       providers: [
-        (() =>
-          appConfig().db.type === 'mongo_mongoose'
-            ? CoffeesServiceMongoose
-            : CoffeesService)(),
+        currentService,
         {
           provide: COFFEE_BRANDS,
           useFactory: () => ['chocolate', 'vanilla'],
           scope: Scope.TRANSIENT,
         },
       ],
-      exports: [
-        (() =>
-          appConfig().db.type === 'mongo_mongoose'
-            ? CoffeesServiceMongoose
-            : CoffeesService)(),
-      ],
+      exports: [currentService],
     };
   }
 }

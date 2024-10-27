@@ -5,16 +5,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { HttpExceptionFilter } from '../filters/hhtps-expections/http-exception.filter';
-
 import { ApiKeyGuard } from '../guards/api-key/api-key.guard';
-
 import { WrapResponseInterceptor } from '../interceptors/wrap-response/wrap-response.interceptor';
 import { TimeoutInterceptor } from '../interceptors/timeout/timeout.interceptor';
-
 import { LoggingMiddleware } from '../middleware/logging/logging.middleware';
 
 @Module({
@@ -41,7 +37,7 @@ import { LoggingMiddleware } from '../middleware/logging/logging.middleware';
     { provide: APP_INTERCEPTOR, useClass: TimeoutInterceptor },
   ],
 })
-export class CommonModule implements NestModule {
+export class GlobalModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggingMiddleware).forRoutes('*');
   }

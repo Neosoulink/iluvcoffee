@@ -17,6 +17,9 @@ export class Event {
 
   @Column('json')
   payload: Record<string, any>;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createAt: Date;
 }
 
 @Schema({ collection: 'event' })

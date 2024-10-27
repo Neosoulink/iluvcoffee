@@ -1,10 +1,17 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Flavor } from './flavor.entity';
 
 @Entity()
+@Index(['name', 'brand'])
 export class Coffee {
   @PrimaryGeneratedColumn()
   id: number;
