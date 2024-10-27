@@ -9,6 +9,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Flavor } from './flavor.entity';
+import appConfig from 'src/config/app.config';
 
 @Entity()
 @Index(['name', 'brand'])
@@ -30,7 +31,7 @@ export class Coffee {
 
   @ManyToMany(
     () => Flavor,
-    process.env.DB === 'mongo' ? undefined : (flavor) => flavor.coffees,
+    appConfig().db.type === 'postgres' ? (flavor) => flavor.coffees : undefined,
     { cascade: true },
   )
   flavors: Flavor[];

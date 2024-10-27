@@ -15,9 +15,11 @@ export class DatabaseModule {
           const config = appConfig();
 
           if (config.db.type === 'mongo_mongoose')
-            return MongooseModule.forRoot(
-              `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`,
-            );
+            return MongooseModule.forRootAsync({
+              useFactory: () => ({
+                uri: `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`,
+              }),
+            });
 
           return TypeOrmModule.forRootAsync({
             useFactory: () => {
