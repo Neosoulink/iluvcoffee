@@ -1,6 +1,8 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Coffee } from './coffee.entity';
 
+import appConfig from 'src/config/app.config';
+
 @Entity()
 export class Flavor {
   @PrimaryGeneratedColumn()
@@ -9,6 +11,9 @@ export class Flavor {
   @Column()
   name: string;
 
-  @ManyToMany(() => Coffee)
+  @ManyToMany(
+    () => Coffee,
+    appConfig().db.type === 'postgres' ? (coffee) => coffee.flavors : undefined,
+  )
   coffees: Coffee[];
 }

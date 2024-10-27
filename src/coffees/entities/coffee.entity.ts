@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   Index,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -29,6 +30,7 @@ export class Coffee {
   @Column({ default: 0 })
   recommendations: number;
 
+  @JoinTable()
   @ManyToMany(
     () => Flavor,
     appConfig().db.type === 'postgres' ? (flavor) => flavor.coffees : undefined,
